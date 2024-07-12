@@ -1,1 +1,1 @@
-# open_university
+# Open University
