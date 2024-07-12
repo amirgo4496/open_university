@@ -19,10 +19,11 @@ int UpdateSymbolAddress(void *data ,void *param);
 
 int S1Do(assembler_data_t *assembler_data)
 {
-	*(assembler_data->symbol_table) = HashCreate(128, HashFunc, S1CompSymbolFunc);
+	assembler_data->symbol_table = HashCreate(128, HashFunc, S1CompSymbolFunc);
 	assembler_data->mem_img = S1ParseSourceFile(assembler_data->src_file,
-		 assembler_data->symbol_table, assembler_data->macro_table);
+		 &(assembler_data->symbol_table), &(assembler_data->macro_table));
 
+	fseek(assembler_data->src_file, 0, SEEK_SET);
 	return !assembler_data->mem_img;	
 }
 
@@ -403,6 +404,10 @@ int S1ParseData(char *data_str, int *numbers)
 				{
 					state = SIGN;
 					curr_number[i++] = c;
+				}
+				else if(' ' == c || '\t' == c)
+				{
+					/*Continue Prsing the next char*/
 				}
 				else
 				{

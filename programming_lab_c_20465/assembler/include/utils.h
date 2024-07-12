@@ -7,8 +7,8 @@
 
 typedef struct assembler_data
 {
-	hash_table_t **symbol_table;
-	hash_table_t **macro_table;
+	hash_table_t *symbol_table;
+	hash_table_t *macro_table;
 	memory_image_t *mem_img;
 	slist_t *external_symbols;
 	slist_t *entry_symbols;

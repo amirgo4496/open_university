@@ -13,18 +13,18 @@ char *GetPreAsmTargetFName(char *src_fname)
 	}
 	strncpy(target_fname, src_fname, src_len + 4);
 	strcpy((target_fname + src_len), ".am");
-	return src_fname;
+	return target_fname;
 }
 
 void DestroyAsmData(assembler_data_t *assembler_data)
 {
-	if(*(assembler_data->symbol_table))
+	if(assembler_data->symbol_table)
 	{
-		HashDestroy(*(assembler_data->symbol_table));
+		HashDestroy(assembler_data->symbol_table);
 	}
-	if(*(assembler_data->macro_table))
+	if(assembler_data->macro_table)
 	{
-		HashDestroy(*(assembler_data->macro_table));
+		HashDestroy(assembler_data->macro_table);
 	}
 	if(assembler_data->external_symbols)
 	{
@@ -46,8 +46,8 @@ void DestroyAsmData(assembler_data_t *assembler_data)
 
 void InitAsmData(assembler_data_t *assembler_data)
 {
-	*(assembler_data->symbol_table) = NULL;
-	*(assembler_data->macro_table) = NULL;
+	assembler_data->symbol_table = NULL;
+	assembler_data->macro_table = NULL;
 	assembler_data->external_symbols = NULL;
 	assembler_data->entry_symbols = NULL;
 	assembler_data->mem_img = NULL;

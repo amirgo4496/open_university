@@ -26,7 +26,7 @@ int main(void)
 	mem_image = S1ParseSourceFile(target_file, &symbol_table, &macro_table);
 
 	fseek(target_file, 0, SEEK_SET);	
-	S2ParseSourceFile(target_file, &symbol_table, &macro_table, mem_image); 
+	S2ParseSourceFile(target_file, &symbol_table, &macro_table, mem_image, NULL, NULL); 
 	printf("\nMACROS:\n");
 	HashForEach(macro_table, PrintMacroAction, NULL);
 	printf("\nSYMBOLS:\n");

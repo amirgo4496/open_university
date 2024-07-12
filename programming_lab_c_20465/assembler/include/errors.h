@@ -21,7 +21,9 @@ enum ERROR_CODES
 	PARSE_OPERAND_ERR = -16,
 	MACRO_ALREADY_DEFINED = -17,
 	UNDECLARED_SYMBOL = -18,
-	FOPEN_ERR = -19
+	FOPEN_ERR = -19,
+	SLIST_ERR = -20,
+	HASH_TABLE_ERR = -21
 };
 
 void PrintError(int err_code ,int line_counter);

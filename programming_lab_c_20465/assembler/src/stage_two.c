@@ -3,12 +3,24 @@
 
 int S2Do(assembler_data_t *assembler_data)
 {
-	return S2ParseSourceFile(assembler_data->src_file, assembler_data->symbol_table,
-					assembler_data->macro_table, assembler_data->mem_img);
+	slist_t *extern_list = SListCreate(), *entry_list = SListCreate();
+
+	if(!extern_list || !entry_list)
+	{
+		return SLIST_ERR;
+	}
+	
+	assembler_data->entry_symbols = entry_list;
+	assembler_data->external_symbols = extern_list;
+
+	return S2ParseSourceFile(assembler_data->src_file, &(assembler_data->symbol_table),
+					&(assembler_data->macro_table), assembler_data->mem_img,
+					entry_list, extern_list);
 }
 
 int S2ParseSourceFile(FILE *src_file, hash_table_t **symbol_table, 
-			hash_table_t **macro_table, memory_image_t *mem_img)
+			hash_table_t **macro_table, memory_image_t *mem_img,
+			slist_t *entry_list, slist_t *extern_list)
 {
 	char curr_line[MAX_LINE_LEN] = {0}, line_cpy[MAX_LINE_LEN] = {0};
 	char *token = NULL;
@@ -31,25 +43,33 @@ int S2ParseSourceFile(FILE *src_file, hash_table_t **symbol_table,
 
 		if((instruction_type = GetInstructionType(token)))
 		{
-			if(ENTRY != instruction_type)
+			if(ENTRY == instruction_type)
+			{
+				token = strtok(NULL, "\t\n\r\f ");
+				symbol_t ent_sym;
+				memset(&ent_sym, 0, sizeof(ent_sym));
+				if(!(found_symbol = HashFind(*symbol_table,token)))
+				{
+					err_code = UNDECLARED_SYMBOL;
+					PrintError(UNDECLARED_SYMBOL, line_counter);
+					continue;
+				}
+				found_symbol->type = ENTRY;
+				strcpy(ent_sym.name, token);
+				ent_sym.value = found_symbol->value;
+				SListInsertBefore(SListStart(entry_list), (void *)&ent_sym);
+			}
+			else
 			{
 				continue;
 			}
-			token = strtok(NULL, "\t\n\r\f ");
-				
-			if(!(found_symbol = HashFind(*symbol_table,token)))
-			{
-				err_code = UNDECLARED_SYMBOL;
-				PrintError(UNDECLARED_SYMBOL, line_counter);
-				continue;
-			}
-			found_symbol->type = ENTRY; 
 		}
 		else
 		{
 		
 			err_code = S2UpdateSymbol(token, IC, mem_img,
-					*symbol_table, line_counter, &L);
+					*symbol_table, line_counter, &L,
+					extern_list);
 		}
 
 		IC += L;
@@ -58,7 +78,8 @@ int S2ParseSourceFile(FILE *src_file, hash_table_t **symbol_table,
 }
 
 int S2UpdateSymbol(char *operation, int IC, memory_image_t *mem_img,
-			hash_table_t *symbol_table, int line_counter, int *length)
+			hash_table_t *symbol_table, int line_counter, int *length,
+			slist_t *extern_list)
 {
 	int i = 0;
 	int operand_num = GetOperandNum(GetOperation(operation));
@@ -86,7 +107,13 @@ int S2UpdateSymbol(char *operation, int IC, memory_image_t *mem_img,
 				mem_cell = MemImageGetCell(mem_img ,IC + L);
 				if(EXTERN == symbol->type)
 				{
+					symbol_t ext_sym;
+					memset(&ext_sym, 0, sizeof(ext_sym));
+					strcpy(ext_sym.name, token);
+					ext_sym.value = IC + IC_OFFSET + L;
+
 					mem_cell->machine_code = 1;
+					SListInsertBefore(SListStart(extern_list), (void *)&ext_sym);
 				}
 				else
 				{

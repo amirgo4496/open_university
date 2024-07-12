@@ -92,8 +92,8 @@ int PreAsmDo(char *src_file_name, assembler_data_t* assembler_data)
 	char *target_file_name = NULL;
 	int ret = 0;
 	
-	target_file = fopen(target_file_name, "r+");
-	if(!target_file)
+	src_file = fopen(src_file_name, "r+");
+	if(!src_file)
 	{
 		return FOPEN_ERR;
 	}
@@ -106,11 +106,10 @@ int PreAsmDo(char *src_file_name, assembler_data_t* assembler_data)
 		return FOPEN_ERR;
 	}
 
-	*(assembler_data->macro_table) = HashCreate(128, HashFunc, PreAsmCompMacroFunc);
-	
-	ret = PreAsmParseSourceFile(src_file, target_file,assembler_data->macro_table);
-	
-
+	assembler_data->macro_table = HashCreate(128, HashFunc, PreAsmCompMacroFunc);
+	assembler_data->src_file = target_file;	
+	ret = PreAsmParseSourceFile(src_file, target_file,&(assembler_data->macro_table));
+	fseek(target_file, 0, SEEK_SET);
 	fclose(src_file);
 	free(target_file_name);
 	return ret;
