@@ -135,6 +135,13 @@ slist_iter_t SListFind(slist_const_iter_t from, slist_const_iter_t to,
  * -------------------------------------------------------------------------- */
 int SListIterIsEqual(slist_const_iter_t element1, slist_const_iter_t element2);
 
+/* -------------------------------------------------------------------------- *
+ * Description - Sort a given list of symbols.
+ * Arguments - list - The list to be sorted.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
+void SListSortSymbols(slist_t *list);
+
 size_t SListSize(const slist_t *list);
 int SListForEach(slist_iter_t from, slist_const_iter_t to, action_t ActionFunc, void *param);
 

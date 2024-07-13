@@ -258,3 +258,37 @@ int SListIterIsEqual(slist_const_iter_t element1, slist_const_iter_t element2)
   return (size_t)element1 == (size_t)element2;
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description - Sort a given list of symbols.
+ * Arguments - list - The list to be sorted.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
+
+void SListSortSymbols(slist_t *list)
+{
+	slist_iter_t current = SListStart(list) ,index = NULL;
+	symbol_t tmp;
+	symbol_t *curr_sym = NULL, *idx_sym = NULL;	
+	if(!(SListStart(list)->next))
+	{
+		return;
+	}
+	while(current->next)
+	{
+		index = current->next;
+		while(index->next)
+		{
+			curr_sym = &(current->data.user_data.symbol);
+			idx_sym = &(index->data.user_data.symbol);
+			if(curr_sym->value > idx_sym->value)
+			{
+				memcpy(&tmp, curr_sym, sizeof(symbol_t));
+				memcpy(curr_sym, idx_sym, sizeof(symbol_t));
+				memcpy(idx_sym, &tmp, sizeof(symbol_t));
+			}
+			index = index->next;
+		}
+		current = current->next;
+	}
+}
+

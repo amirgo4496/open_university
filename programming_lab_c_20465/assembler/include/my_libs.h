@@ -13,5 +13,6 @@
 #include "./pre_assembler.h"
 #include "./stage_one.h"
 #include "./stage_two.h"
+#include "./export_files.h"
 
 #endif

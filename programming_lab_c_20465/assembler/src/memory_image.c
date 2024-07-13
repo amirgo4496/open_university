@@ -78,6 +78,18 @@ memory_image_t *MemImageUnite(memory_image_t *code, memory_image_t *data, int IC
 	return code;
 }
 
+void MemImageForEach(memory_image_t *img, action_t ActionFunc, void *param)
+{
+	int i = 0;
+	for(; i < img->size; ++i)
+	{
+		if(ActionFunc(&(img->memory_cells[i]), param))
+		{
+			break;
+		}
+	}
+}
+
 void MemImagePrint(memory_image_t *img)
 {
 	int i = 0;

@@ -24,14 +24,17 @@ int main(void)
 	printf("\nCode Image:\n");
 	MemImagePrint(assembler_data.mem_img);
 
+	SListSortSymbols(assembler_data.external_symbols);
 	printf("\nExtern Symbols:\n");
 	SListForEach(SListStart(assembler_data.external_symbols), SListEnd(assembler_data.external_symbols),
 				PrintSymbolAction, NULL);
 
+	SListSortSymbols(assembler_data.entry_symbols);
 	printf("\nEntry Symbols:\n");
 	SListForEach(SListStart(assembler_data.entry_symbols), SListEnd(assembler_data.entry_symbols),
 				PrintSymbolAction, NULL);
 
+	ExportDo(&assembler_data, "test_file2");
 
 	DestroyAsmData(&assembler_data);
 	return 0;

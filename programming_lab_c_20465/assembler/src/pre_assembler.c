@@ -97,7 +97,7 @@ int PreAsmDo(char *src_file_name, assembler_data_t* assembler_data)
 	{
 		return FOPEN_ERR;
 	}
-	target_file_name = GetPreAsmTargetFName(src_file_name);
+	target_file_name = GetFileName(src_file_name, ".am");
 	target_file = fopen(target_file_name, "w+");
 	if(!target_file)
 	{

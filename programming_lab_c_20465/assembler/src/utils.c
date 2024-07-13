@@ -2,17 +2,36 @@
 #include "../include/glibc_libs.h"
 
 
-char *GetPreAsmTargetFName(char *src_fname)
+
+int DecimalToOctal(int decimal)
+{
+	int octal = 0;
+	int mult = 1, tmp = decimal;
+	int test = decimal;
+	while(tmp)
+	{
+		octal += (tmp % 8) * mult;
+		tmp /= 8;
+		mult *= 10;
+	}
+	return octal;
+}
+
+
+char *GetFileName(char *src_fname, char *postfix)
 {
 	char *target_fname = NULL;
-	int src_len = strlen(src_fname);
-	target_fname = malloc(src_len + 4);
+	int base_len = 0;
+	char *base_name = NULL;
+	base_name = strtok(src_fname, ".");
+	base_len = strlen(base_name);
+	target_fname = malloc(base_len + 5);
 	if(!target_fname)
 	{
 		return NULL;
 	}
-	strncpy(target_fname, src_fname, src_len + 4);
-	strcpy((target_fname + src_len), ".am");
+	strncpy(target_fname, base_name, base_len + 5);
+	strcpy((target_fname + base_len), postfix);
 	return target_fname;
 }
 

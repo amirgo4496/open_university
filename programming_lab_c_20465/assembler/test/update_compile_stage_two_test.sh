@@ -1,2 +1,2 @@
-gcc -g ../src/slist.c ../src/pre_assembler.c ../src/errors.c ../src/hash_table.c ../src/utils.c ../src/operations.c ../src/memory_image.c ../src/stage_one.c  ../src/stage_two.c update_stage_two_test.c -ansi -Wall -pedantic -o stage2.out
+gcc -g ../src/slist.c ../src/pre_assembler.c ../src/errors.c ../src/hash_table.c ../src/utils.c ../src/operations.c ../src/memory_image.c ../src/stage_one.c ../src/export_files.c  ../src/stage_two.c update_stage_two_test.c -ansi -Wall -pedantic -o stage2.out
 

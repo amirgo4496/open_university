@@ -16,7 +16,8 @@ typedef struct assembler_data
 } assembler_data_t;
 
 
-char *GetPreAsmTargetFName(char *src_fname);
+char *GetFileName(char *src_fname, char *postfix);
+int DecimalToOctal(int decimal);
 void DestroyAsmData(assembler_data_t *assembler_data);
 void InitAsmData(assembler_data_t *assembler_data);
 size_t HashFunc(const void *data);
