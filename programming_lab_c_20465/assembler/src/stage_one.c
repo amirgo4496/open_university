@@ -113,6 +113,7 @@ memory_image_t *S1ParseSourceFile(FILE *src_file, hash_table_t **symbol_table, h
 		else
 		{
 			PrintError(UNKNOWN_TOKEN, line_counter);
+			err = UNKNOWN_TOKEN;
 		}
 
 		if(is_symbol && !err)

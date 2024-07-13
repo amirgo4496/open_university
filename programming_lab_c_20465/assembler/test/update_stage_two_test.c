@@ -9,13 +9,30 @@ int PrintMacroAction(void *data ,void *param);
 int main(void)
 {
 
+	int state = 0;
 	assembler_data_t assembler_data;
 	InitAsmData(&assembler_data);
 
-	PreAsmDo("test_file2", &assembler_data);
+	state = PreAsmDo("test_file2", &assembler_data);
+	if(state)
+	{
+		printf("Error in pre assembler state\n");
+		return 1;
+	}
+	
 
-	S1Do(&assembler_data);
-	S2Do(&assembler_data);
+	state = S1Do(&assembler_data);
+	if(state)
+	{
+		printf("Error in stage one\n");
+		return 2;
+	}
+	state = S2Do(&assembler_data);
+	if(state)
+	{
+		printf("Error in stage two\n");
+		return 3;
+	}
 	
 	printf("\nMACROS:\n");
 	HashForEach(assembler_data.macro_table, PrintMacroAction, NULL);
