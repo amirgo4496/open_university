@@ -26,6 +26,12 @@ enum ERROR_CODES
 	HASH_TABLE_ERR = -21
 };
 
+/* -------------------------------------------------------------------------- *
+ * Description - Takes err_code and line_number where error was found and prints
+ * 		an informative error.
+ * Arguments - int err_code (documented at errors.h), int line_number.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
 void PrintError(int err_code ,int line_counter);
 
 #endif

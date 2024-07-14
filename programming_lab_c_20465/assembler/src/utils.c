@@ -2,12 +2,15 @@
 #include "../include/glibc_libs.h"
 
 
-
+/* -------------------------------------------------------------------------- *
+ * Description -Takes decimal value and input and returns the corresponding octal value.
+ * Arguments - decimal - decimal integer.
+ * Return - octal representation.
+ * -------------------------------------------------------------------------- */
 int DecimalToOctal(int decimal)
 {
 	int octal = 0;
 	int mult = 1, tmp = decimal;
-	int test = decimal;
 	while(tmp)
 	{
 		octal += (tmp % 8) * mult;
@@ -17,24 +20,34 @@ int DecimalToOctal(int decimal)
 	return octal;
 }
 
-
-char *GetFileName(char *src_fname, char *postfix)
+/* -------------------------------------------------------------------------- *
+ * Description - Takes a fname as the base name and a postfix to be added
+ * 		and returns the input concatenated.
+ * 		This function allocates memory for the returned string and its the user
+ * 		responsibility to free once unused. 
+ * Arguments - fname - The file name base name, postifix to be added.
+ * Return - The concatenated string of fname + postfix.
+ * -------------------------------------------------------------------------- */
+char *GetFileName(char *fname, char *postfix)
 {
 	char *target_fname = NULL;
-	int base_len = 0;
-	char *base_name = NULL;
-	base_name = strtok(src_fname, ".");
-	base_len = strlen(base_name);
-	target_fname = malloc(base_len + 5);
+	int len = 0;
+	len = strlen(fname);
+	target_fname = malloc(len + 5);
 	if(!target_fname)
 	{
 		return NULL;
 	}
-	strncpy(target_fname, base_name, base_len + 5);
-	strcpy((target_fname + base_len), postfix);
+	strncpy(target_fname, fname, len + 5);
+	strcpy((target_fname + len), postfix);
 	return target_fname;
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description -Free all data structure used by the assembler process.
+ * Arguments - assembler_data_t that was given to InitAsmData.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
 void DestroyAsmData(assembler_data_t *assembler_data)
 {
 	if(assembler_data->symbol_table)
@@ -63,6 +76,11 @@ void DestroyAsmData(assembler_data_t *assembler_data)
 	}
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description -Initialize all of assembler_data_t members, to later be used by the assembler.
+ * Arguments - assembler_data_t to be initialized.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
 void InitAsmData(assembler_data_t *assembler_data)
 {
 	assembler_data->symbol_table = NULL;
@@ -73,6 +91,11 @@ void InitAsmData(assembler_data_t *assembler_data)
 	assembler_data->src_file = NULL;
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description -Simple Hash function (Used in the HashTable structures of the assembler).
+ * Arguments - void *data to be hashed.
+ * Return - size_t hash value.
+ * -------------------------------------------------------------------------- */
 size_t HashFunc(const void *data)
 {
         size_t i = 0;
@@ -91,10 +114,11 @@ size_t HashFunc(const void *data)
         return hash_value;
 }
 
-
-/*
-	returns type of instruction or 0 if not instruction.
-*/
+/* -------------------------------------------------------------------------- *
+ * Description -Takes an intruction name and returns its type.
+ * Arguments - char *name - name of the instruction.
+ * Return - int type of the instruction or 0 if its not an instruction.
+ * -------------------------------------------------------------------------- */
 int GetInstructionType(const char *name)
 {
 	int ret = 0;
@@ -117,6 +141,12 @@ int GetInstructionType(const char *name)
 	return ret;
 }
 
+
+/* -------------------------------------------------------------------------- *
+ * Description -Helper Function to print a binary representation of short integer.
+ * Arguments - n - to be printed.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
 void PrintWordBinary(unsigned short n)
 {
 	int i = 15;
@@ -135,6 +165,11 @@ void PrintWordBinary(unsigned short n)
 	}
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description -Takes a string and trims leading spaces.
+ * Arguments - char *str to be trimmed.
+ * Return - char *str trimmed.
+ * -------------------------------------------------------------------------- */
 char *TrimPrefix(char *str)
 {
 	while(*str && isspace(*str))
@@ -144,6 +179,11 @@ char *TrimPrefix(char *str)
 	return str;
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description -Takes a string and trims trailing spaces.
+ * Arguments - char *str to be trimmed.
+ * Return - char *str trimmed.
+ * -------------------------------------------------------------------------- */
 char *TrimPostfix(char *str)
 {
 	while(*str && !isspace(*str))
@@ -154,7 +194,12 @@ char *TrimPostfix(char *str)
 	return str;
 }
 
-
+/* -------------------------------------------------------------------------- *
+ * Description -Checks whether a given string represent a number
+ * 		The string can be prefixed with +/-.
+ * Arguments - char *str to be tested.
+ * Return - int 1 for valid number 0 otherwise.
+ * -------------------------------------------------------------------------- */
 int IsNumber(char *str)
 {
 	if('-' == *str || '+' == *str)

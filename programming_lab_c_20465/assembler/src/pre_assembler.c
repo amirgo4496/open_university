@@ -7,16 +7,24 @@
 enum PRE_ASSEMBLER_STATES{DEFAULT, PARSE_MACRO};
 
 
-/*
-TODO: ADD COMMENTS!!!
-*/
-
+/* -------------------------------------------------------------------------- *
+ * Description - Checks if a given macro name is valid.
+ * Arguments - char *name of macro.
+ * Return - returns 1 if valid, 0 otherwise.
+ * -------------------------------------------------------------------------- */
 int PreAsmIsValidMacroName(const char *name)
 {
 	return isalpha(*name) && !GetOperation(name) && !GetInstructionType(name) && strlen(name) < 32;
 }
 
-int PreAsmExtendMacro(FILE *src_file ,FILE *target_file ,macro_t macro)
+/* -------------------------------------------------------------------------- *
+ * Description - writes a given macro from src_file to target_file(extends macro at target file).
+ * Arguments - FILE *src_file from which macro defenition is read.
+ * 		FILE *target_file to which macro is extended.
+ * 		macro_t macro to be extended.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
+void PreAsmExtendMacro(FILE *src_file ,FILE *target_file ,macro_t macro)
 {
 	int macro_size = 0;
 	long saved_position = ftell(src_file);
@@ -29,10 +37,18 @@ int PreAsmExtendMacro(FILE *src_file ,FILE *target_file ,macro_t macro)
 		fputc(fgetc(src_file) ,target_file);
 	}
 	fseek(src_file ,saved_position ,SEEK_SET);
-	return 0;	
 }
 
-int PreAsmParseLine(char *line, char *token, FILE *src_file ,FILE *target_file ,hash_table_t **ht)
+/* -------------------------------------------------------------------------- *
+ * Description - Parses a single line from source file and writes if needed to target file.
+ * Arguments - char *line to be parsed
+ * 		char *token first word of line
+ * 		FILE *src_file
+ * 		FILE *target_file
+ *		hash_table_t **macro_table.
+ * Return - error number or 0 for success.
+ * -------------------------------------------------------------------------- */
+int PreAsmParseLine(char *line, char *token, FILE *src_file ,FILE *target_file ,hash_table_t **macro_table)
 {
 	static int state = DEFAULT;
 	static macro_t curr_macr;
@@ -49,7 +65,7 @@ int PreAsmParseLine(char *line, char *token, FILE *src_file ,FILE *target_file ,
 				{
 					return INVALID_MACRO_NAME;		
 				}
-				else if(HashFind(*ht ,token))
+				else if(HashFind(*macro_table ,token))
 				{
 					return MACRO_ALREADY_DEFINED;
 				}
@@ -61,7 +77,7 @@ int PreAsmParseLine(char *line, char *token, FILE *src_file ,FILE *target_file ,
 					curr_macr.end_offset = -1;
 				}
 			}
-			else if((found_macr = (user_data_t *)HashFind(*ht ,token)))
+			else if((found_macr = (user_data_t *)HashFind(*macro_table ,token)))
 			{
 				PreAsmExtendMacro(src_file ,target_file ,found_macr->macro);
 			}
@@ -75,24 +91,30 @@ int PreAsmParseLine(char *line, char *token, FILE *src_file ,FILE *target_file ,
 			{
 				state = DEFAULT;
 				curr_macr.end_offset = ftell(src_file) - strlen(line);
-				HashInsert(ht ,(void *)&curr_macr);
-				found_macr = HashFind(*ht ,curr_macr.name);
+				HashInsert(macro_table ,(void *)&curr_macr);
+				found_macr = HashFind(*macro_table ,curr_macr.name);
 			}
 			break;
 			
 	}
-
-
 	return 0;
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description - User wrapper to execute the pre assembler stage.
+ * Arguments - char *src_file_name
+ * 		assembler_data_t assembler data structures and metadata.
+ * Return - returns error code or 0 for success.
+ * -------------------------------------------------------------------------- */
 int PreAsmDo(char *src_file_name, assembler_data_t* assembler_data)
 {
-	FILE *target_file = NULL, *src_file = NULL;; 
-	char *target_file_name = NULL;
+	FILE *target_file = NULL, *src_file = NULL; 
 	int ret = 0;
-	
-	src_file = fopen(src_file_name, "r+");
+	char *target_file_name = NULL;
+	char *src_full_fname = NULL;
+
+	src_full_fname = GetFileName(src_file_name, ".as");
+	src_file = fopen(src_full_fname, "r+");
 	if(!src_file)
 	{
 		return FOPEN_ERR;
@@ -109,13 +131,23 @@ int PreAsmDo(char *src_file_name, assembler_data_t* assembler_data)
 	assembler_data->macro_table = HashCreate(128, HashFunc, PreAsmCompMacroFunc);
 	assembler_data->src_file = target_file;	
 	ret = PreAsmParseSourceFile(src_file, target_file,&(assembler_data->macro_table));
+
 	fseek(target_file, 0, SEEK_SET);
 	fclose(src_file);
 	free(target_file_name);
+	free(src_full_fname);
 	return ret;
 }
 
 
+/* -------------------------------------------------------------------------- *
+ * Description - Parses the source file line by line and writes the output to target file
+ * 		removes comments and extends macros.
+ * Arguments - FILE *src_file
+ * 		FILE *target_file
+ * 		hash_table_t **macro_table.
+ * Return - error code or 0 for success.
+ * -------------------------------------------------------------------------- */
 int PreAsmParseSourceFile(FILE *src_file, FILE *target_file, 
 				hash_table_t **macro_table)
 {
@@ -146,10 +178,16 @@ int PreAsmParseSourceFile(FILE *src_file, FILE *target_file,
 }
 
 
-int PreAsmCompMacroFunc(const void *data , void *param)
+/* -------------------------------------------------------------------------- *
+ * Description - Function to be used for the macro hash table to compare two macros.
+ * Arguments - void *data to the macro being compared
+ * 		void *compared_name to the name being compared to.
+ * Return - returns 1 if equal 0 if not.
+ * -------------------------------------------------------------------------- */
+int PreAsmCompMacroFunc(const void *data , void *compared_name)
 {
         user_data_t *my_data = (user_data_t *)data;    
-        return !strcmp((const char *)my_data->macro.name ,(const char *)param);
+        return !strcmp((const char *)my_data->macro.name ,(const char *)compared_name);
 }
 
 

@@ -6,7 +6,7 @@ static int PrintSymbolAction(void *data ,void *param);
 static int PrintMacroAction(void *data ,void *param);
 
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
 
 	int state = 0;

@@ -10,7 +10,7 @@ $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) $(DEBUG_FLAG) $(OBJS) -o $@
 
 src/%.o: src/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(DEBUG_FLAG) -c $< -o $@
 
 
 clean:

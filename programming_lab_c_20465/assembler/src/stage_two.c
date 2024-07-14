@@ -45,8 +45,8 @@ int S2ParseSourceFile(FILE *src_file, hash_table_t **symbol_table,
 		{
 			if(ENTRY == instruction_type)
 			{
-				token = strtok(NULL, "\t\n\r\f ");
 				symbol_t ent_sym;
+				token = strtok(NULL, "\t\n\r\f ");
 				memset(&ent_sym, 0, sizeof(ent_sym));
 				if(!(found_symbol = HashFind(*symbol_table,token)))
 				{
