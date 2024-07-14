@@ -2,68 +2,94 @@
 #include "../include/glibc_libs.h"
 
 
-int ExportEntries(slist_t *entry_list, char *src_fname)
+/* -------------------------------------------------------------------------- *
+ * Description - Export all the extern symbols mentions to a file.
+ * Arguments - sym_list a list of all symbols mentions
+ * 		src_fname the name of the file without the matching postfix.
+ * Return - err code (0 for success).
+ * -------------------------------------------------------------------------- */
+int ExportSymbols(slist_t* symbol_list, char *src_fname, 
+			char *postfix,action_t ExportFunc)
 {
-	char *entry_fname = GetFileName(src_fname, ".ent");
-	FILE *entry_file = fopen(entry_fname, "w+");
-
-	SListSortSymbols(entry_list);
-	SListForEach(SListStart(entry_list),SListEnd(entry_list),ExportEntryAction, entry_file);
-	fclose(entry_file);
-	free(entry_fname);
-	return 0;
+	char *fname = GetFileName(src_fname, postfix);
+	FILE *target_file = fopen(fname, "w+");
+	int err_code = 0;
+	SListSortSymbols(symbol_list);
+	err_code = SListForEach(SListStart(symbol_list),SListEnd(symbol_list),ExportFunc, target_file);
+	fclose(target_file);
+	free(fname);
+	return err_code;
 }
 
-int ExportExternals(slist_t* extern_list, char *src_fname)
-{
-	char *extern_fname = GetFileName(src_fname, ".ext");
-	FILE *extern_file = fopen(extern_fname, "w+");
 
-	SListSortSymbols(extern_list);
-	SListForEach(SListStart(extern_list),SListEnd(extern_list),ExportExternalAction, extern_file);
-	fclose(extern_file);
-	free(extern_fname);
-	return 0;
-}
 
+/* -------------------------------------------------------------------------- *
+ * Description - Export the ocject file.
+ * Arguments - mem_img the memory image for the current file
+ * 		src_fname the current file name.
+ * Return - err code (0 for success).
+ * -------------------------------------------------------------------------- */
 int ExportObject(memory_image_t *mem_img, char *src_fname)
 {
-	char *obj_fname = GetFileName(src_fname, ".obj");
+	char *obj_fname = GetFileName(src_fname, ".ob");
 	FILE *obj_file = fopen(obj_fname, "w+");
-	
+	int err_code = 0;
 	fprintf(obj_file, "%ld %ld\n", mem_img->code_len, mem_img->data_len);
-	MemImageForEach(mem_img, ExportObjectAction, obj_file);	
+	err_code = MemImageForEach(mem_img, ExportObjectAction, obj_file);	
 
 	fclose(obj_file);
 	free(obj_fname);
-	return 0;
+	return err_code;
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description - Exports all the given files.
+ * Arguments - sym_list a list of all symbols mentions
+ * 		src_fname the name of the file without the matching postfix.
+ * Return - err code (0 for success).
+ * -------------------------------------------------------------------------- */
 int ExportDo(assembler_data_t *assembler_data, char *src_fname)
 {
-	if(assembler_data->entry_symbols)
+	int err_code = 0;
+	err_code = ExportObject(assembler_data->mem_img, src_fname);
+	if(!err_code && assembler_data->entry_symbols)
 	{
-		ExportEntries(assembler_data->entry_symbols, src_fname);
+		err_code = ExportSymbols(assembler_data->entry_symbols, src_fname, 
+			".ent",ExportEntryAction);
 	}
 	
-	if(assembler_data->external_symbols)
+	if(!err_code && assembler_data->external_symbols)
 	{
-		ExportExternals(assembler_data->external_symbols, src_fname);
+		ExportSymbols(assembler_data->external_symbols, src_fname, 
+			".ext",ExportExternalAction);
 	}
-	ExportObject(assembler_data->mem_img, src_fname);
-	return 0;
+	return err_code;
 }
 
+
+/* -------------------------------------------------------------------------- *
+ * Description - Export one line to the object file.
+ * Arguments - data - memory cell fromt he memory image
+ * 		param the FILE * to be written.
+ * Return - err code (0 for success).
+ * -------------------------------------------------------------------------- */
 int ExportObjectAction(void *data, void *param)
 {
 	FILE *obj_file = (FILE *)param;
+	int ret = 0;
 	memory_cell_t *mem_cell = (memory_cell_t *)data;
 	short decimal =  mem_cell->machine_code & (~(1 << 15)); 
 	int octal = DecimalToOctal((unsigned)decimal);
-	fprintf(obj_file, "%04ld %05d\n",(mem_cell->address + IC_OFFSET), octal);
-	return 0;
+	ret = fprintf(obj_file, "%04ld %05d\n",(mem_cell->address + IC_OFFSET), octal);
+	return !(ret > 0);
 }	
 
+/* -------------------------------------------------------------------------- *
+ * Description - Export one line to the entry file.
+ * Arguments - data - entry symbol from the list
+ * 		param the FILE * to be written.
+ * Return - err code (0 for success).
+ * -------------------------------------------------------------------------- */
 int ExportEntryAction(void *data ,void *param)
 {
 	user_data_t *user_data = (user_data_t *)data;
@@ -73,6 +99,12 @@ int ExportEntryAction(void *data ,void *param)
 	return 0;
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description - Export one line to the extern file.
+ * Arguments - data - extern symbol from the list
+ * 		param the FILE * to be written.
+ * Return - err code (0 for success).
+ * -------------------------------------------------------------------------- */
 int ExportExternalAction(void *data ,void *param)
 {
 	user_data_t *user_data = (user_data_t *)data;

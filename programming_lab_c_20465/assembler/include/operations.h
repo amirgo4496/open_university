@@ -30,9 +30,30 @@ typedef struct reg
 
 
 
-
+/* -------------------------------------------------------------------------- *
+ * Description - returns operation matching with the given name.
+ * Arguments - operation ame to be searched.
+ * Return - found operation pointer or NULL.
+ * -------------------------------------------------------------------------- */
 const operation_t *GetOperation(const char *name);
+
+/* -------------------------------------------------------------------------- *
+ * Description - returns the number for the given register string representation.
+ * Arguments - name- register name as string.
+ * Return - int- the parsed register number.
+ * -------------------------------------------------------------------------- */
 int GetRegisterNum(char *name);
+/* -------------------------------------------------------------------------- *
+ * Description - returns the addressing type for the given operand.
+ * Arguments - operand to be parsed.
+ * Return - addressing type or 0 for error.
+ * -------------------------------------------------------------------------- */
 int GetAddressingType(char *operand);
+
+/* -------------------------------------------------------------------------- *
+ * Description - returns the number of legal operands for the given operation.
+ * Arguments - operation.
+ * Return - number of legal operands.
+ * -------------------------------------------------------------------------- */
 int GetOperandNum(const operation_t *operation);
 #endif

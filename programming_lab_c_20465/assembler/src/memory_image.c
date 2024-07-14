@@ -1,7 +1,11 @@
 #include "../include/my_libs.h"
 #include "../include/glibc_libs.h"
 
-
+/* -------------------------------------------------------------------------- *
+ * Description - Creates a new memory image.
+ * Arguments - capacity initial capacity for the iamge.
+ * Return - memory image created or NULL if error occured.
+ * -------------------------------------------------------------------------- */
 memory_image_t *MemImageCreate(size_t capacity)
 {
 	memory_image_t *memory_image = malloc(sizeof(memory_image_t));
@@ -21,13 +25,24 @@ memory_image_t *MemImageCreate(size_t capacity)
 
 	return memory_image;
 }
-
+/* -------------------------------------------------------------------------- *
+ * Description - Free's resources used by memory image.
+ * Arguments - image to be destroyed.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
 void MemImageDestroy(memory_image_t *image)
 {
 	free(image->memory_cells);
 	free(image);
 }
 
+/* -------------------------------------------------------------------------- *
+ * Description - Inserts a new cell into the memory image, if size is insufficient
+ * 		it reallocates new space.
+ * Arguments - mem_image memory image to be updated
+ * 		to_insert cell to be inserted.
+ * Return - 0 for success or error code for failure.
+ * -------------------------------------------------------------------------- */
 int MemImageInsert(memory_image_t *mem_image, memory_cell_t to_insert)
 {	
 	memory_cell_t *new = NULL;
@@ -47,12 +62,27 @@ int MemImageInsert(memory_image_t *mem_image, memory_cell_t to_insert)
 
 	return 0;
 }
-
+/* -------------------------------------------------------------------------- *
+ * Description - Get a cell of memory at address from image.
+ * Arguments - mem_image memory image
+ * 		address - address of memory image.
+ * Return - memory cell found or NULL if not found.
+ * -------------------------------------------------------------------------- */
 memory_cell_t *MemImageGetCell(memory_image_t *mem_image ,size_t address)
 {
+	if(address > mem_image->size)
+	{
+		return NULL;
+	}
 	return &mem_image->memory_cells[address];
 }
-
+/* -------------------------------------------------------------------------- *
+ * Description - Concatantes two memory images.
+ * Arguments - code image to be concatenated to
+ * 		data second image to be concatanted.
+ * 		IC value after first stage(maximum value).
+ * Return - returns new memory image or NULL if something failed.
+ * -------------------------------------------------------------------------- */
 memory_image_t *MemImageUnite(memory_image_t *code, memory_image_t *data, int IC)
 {
 	size_t capacity = code->size + data->size;
@@ -77,19 +107,31 @@ memory_image_t *MemImageUnite(memory_image_t *code, memory_image_t *data, int IC
 	MemImageDestroy(data);
 	return code;
 }
-
-void MemImageForEach(memory_image_t *img, action_t ActionFunc, void *param)
+/* -------------------------------------------------------------------------- *
+ * Description - Execute ActionFunc for each memory cell in memory image.
+ * Arguments - img the memory image
+ * 		ActionFunc the function to be executed.
+ * 		param a user supplied parameter for ActionFunc
+ * Return - return error code (0 for success).
+ * -------------------------------------------------------------------------- */
+int MemImageForEach(memory_image_t *img, action_t ActionFunc, void *param)
 {
 	int i = 0;
+	int ret = 0;
 	for(; i < img->size; ++i)
 	{
-		if(ActionFunc(&(img->memory_cells[i]), param))
+		if((ret = ActionFunc(&(img->memory_cells[i]), param)))
 		{
 			break;
 		}
 	}
+	return ret;
 }
-
+/* -------------------------------------------------------------------------- *
+ * Description - Helper function for debugging for printing a memory image.
+ * Arguments - img the memory image.
+ * Return - None.
+ * -------------------------------------------------------------------------- */
 void MemImagePrint(memory_image_t *img)
 {
 	int i = 0;

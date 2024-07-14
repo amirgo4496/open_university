@@ -64,6 +64,12 @@ static const operation_t operations[OPERATIONS_AMOUNT] =
 };
 
 static const reg_t registers[REGISTERS_AMOUNT] = {{"r0", 0}, {"r1" ,1}, {"r2", 2}, {"r3", 3}, {"r4", 4}, {"r5", 5}, {"r6", 6}, {"r7", 7}};
+
+/* -------------------------------------------------------------------------- *
+ * Description - returns operation matching with the given name.
+ * Arguments - operation ame to be searched.
+ * Return - found operation pointer or NULL.
+ * -------------------------------------------------------------------------- */
 const operation_t *GetOperation(const char *name)
 {
 	int i = 0;
@@ -77,14 +83,22 @@ const operation_t *GetOperation(const char *name)
 	
 	return op;
 }
-
+/* -------------------------------------------------------------------------- *
+ * Description - returns the number for the given register string representation.
+ * Arguments - name- register name as string.
+ * Return - int- the parsed register number.
+ * -------------------------------------------------------------------------- */
 int GetRegisterNum(char *name)
 {
 	int i = 0;
 	for(; i < REGISTERS_AMOUNT && strcmp(registers[i].name, name); ++i);
 	return i != REGISTERS_AMOUNT ? i : 0;
 }
-
+/* -------------------------------------------------------------------------- *
+ * Description - returns the addressing type for the given operand.
+ * Arguments - operand to be parsed.
+ * Return - addressing type or 0 for error.
+ * -------------------------------------------------------------------------- */
 int GetAddressingType(char *operand)
 {
 	int type = 0;
@@ -106,7 +120,11 @@ int GetAddressingType(char *operand)
 	}
 	return type;
 }
-
+/* -------------------------------------------------------------------------- *
+ * Description - returns the number of legal operands for the given operation.
+ * Arguments - operation.
+ * Return - number of legal operands.
+ * -------------------------------------------------------------------------- */
 int GetOperandNum(const operation_t *operation)
 {
 	return !!operation->operands_addressing_types[SRC_OPERAND_IDX] + !!operation->operands_addressing_types[DST_OPERAND_IDX];

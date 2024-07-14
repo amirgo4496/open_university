@@ -68,8 +68,5 @@ void PrintError(int err_code ,int line_number)
 		case UNDECLARED_SYMBOL:
 			printf("Symbol name without decleration at line %d\n", line_number);
 			break;
-
-
-
 	}
 }
