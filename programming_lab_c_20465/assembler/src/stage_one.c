@@ -16,7 +16,7 @@ enum S1_PARSER_STATES
 
 
 
-int UpdateSymbolAddress(void *data ,void *param);
+static int UpdateSymbolAddress(void *data ,void *param);
 
 
 /* -------------------------------------------------------------------------- *
@@ -161,7 +161,7 @@ memory_image_t *S1ParseSourceFile(FILE *src_file, hash_table_t **symbol_table, h
 		MemImageDestroy(data_img);
 		return NULL;
 	}
-	HashForEach(*symbol_table, UpdateSymbolAddress, (void *)IC);
+	HashForEach(*symbol_table, UpdateSymbolAddress, (void *)&IC);
 	return MemImageUnite(code_img, data_img, IC);	
 }
 
@@ -172,10 +172,10 @@ memory_image_t *S1ParseSourceFile(FILE *src_file, hash_table_t **symbol_table, h
  * 		param - the calculated IC.
  * Return - 0 for success.
  * -------------------------------------------------------------------------- */
-int UpdateSymbolAddress(void *data ,void *param)
+static int UpdateSymbolAddress(void *data ,void *param)
 {
 	symbol_t *symbol = (symbol_t *)data;
-	int IC = (int)param;
+	int IC = *((int *)param);
 	if(DATA == symbol->type || STRING == symbol->type)
 	{
 		symbol->value += IC + IC_OFFSET;

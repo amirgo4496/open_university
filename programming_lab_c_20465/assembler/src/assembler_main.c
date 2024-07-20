@@ -2,9 +2,10 @@
 #include "../include/glibc_libs.h"
 
 
+#ifdef	__VERBOSE__
 static int PrintSymbolAction(void *data ,void *param);
 static int PrintMacroAction(void *data ,void *param);
-
+#endif
 
 int main(int argc, char **argv)
 {
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
 }
 
 
+#ifdef	__VERBOSE__
 static int PrintSymbolAction(void *data ,void *param)
 {
 	user_data_t *user_data = (user_data_t *)data;
@@ -81,3 +83,4 @@ static int PrintMacroAction(void *data ,void *param)
 	printf("Name: %s --- Start: %d --- End: %d\n",user_data->macro.name, user_data->macro.start_offset, user_data->macro.end_offset);
 	return 0;
 }
+#endif
