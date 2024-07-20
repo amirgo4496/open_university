@@ -2,7 +2,7 @@
 
 
 !.gitignore
-!programming_lab_c_20465/include/*.h
-!programming_lab_c_20465/src/*.c
+!programming_lab_c_20465/assembler/include/*.h
+!programming_lab_c_20465/assembler/src/*.c
 !programming_lab_c_20465/assembler/makefile
 !programming_lab_c_20465/README.md
