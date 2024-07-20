@@ -142,6 +142,13 @@ int SListIterIsEqual(slist_const_iter_t element1, slist_const_iter_t element2);
  * -------------------------------------------------------------------------- */
 void SListSortSymbols(slist_t *list);
 
+/* -------------------------------------------------------------------------- *
+ * Description - Returns if list is empty (only dummy node).
+ * Arguments - list.
+ * Return - 1 if empty 0 otherwise.
+ * -------------------------------------------------------------------------- */
+int SListIsEmpty(slist_t *list);
+
 size_t SListSize(const slist_t *list);
 int SListForEach(slist_iter_t from, slist_const_iter_t to, action_t ActionFunc, void *param);
 

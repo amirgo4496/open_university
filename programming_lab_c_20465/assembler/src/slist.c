@@ -51,7 +51,6 @@ static void SListRecursiveFree(slist_node_t *head)
   	}
 }
 
-
 /* -------------------------------------------------------------------------- *
  * Description - Creates a new empty linked list or NULL if fails
    NOTE: list will be created with head and a dummy/tail
@@ -292,3 +291,13 @@ void SListSortSymbols(slist_t *list)
 	}
 }
 
+
+/* -------------------------------------------------------------------------- *
+ * Description - Returns if list is empty (only dummy node).
+ * Arguments - list.
+ * Return - 1 if empty 0 otherwise.
+ * -------------------------------------------------------------------------- */
+int SListIsEmpty(slist_t *list)
+{
+	return !list->head->next;
+}

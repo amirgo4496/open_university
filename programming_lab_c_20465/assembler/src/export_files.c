@@ -52,13 +52,13 @@ int ExportDo(assembler_data_t *assembler_data, char *src_fname)
 {
 	int err_code = 0;
 	err_code = ExportObject(assembler_data->mem_img, src_fname);
-	if(!err_code && assembler_data->entry_symbols)
+	if(!err_code && !SListIsEmpty(assembler_data->entry_symbols))
 	{
 		err_code = ExportSymbols(assembler_data->entry_symbols, src_fname, 
 			".ent",ExportEntryAction);
 	}
 	
-	if(!err_code && assembler_data->external_symbols)
+	if(!err_code && !SListIsEmpty(assembler_data->external_symbols))
 	{
 		ExportSymbols(assembler_data->external_symbols, src_fname, 
 			".ext",ExportExternalAction);
