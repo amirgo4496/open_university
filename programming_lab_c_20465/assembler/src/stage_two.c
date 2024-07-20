@@ -87,7 +87,7 @@ int S2ParseSourceFile(FILE *src_file, hash_table_t **symbol_table,
 		else
 		{
 		
-			err_code = S2UpdateSymbol(token, IC, mem_img,
+			err_code |= S2UpdateSymbol(token, IC, mem_img,
 					*symbol_table, line_counter, &L,
 					extern_list);
 		}

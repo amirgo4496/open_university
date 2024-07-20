@@ -426,6 +426,7 @@ int S1ParseData(char *data_str, int *numbers)
 	int L = 0, i = 0;
 	char c = 0;
 	char curr_number[MAX_LINE_LEN] = {0};
+	int prev = 0;
 	data_str = TrimPrefix(data_str);
 	while((c = *data_str))
 	{
@@ -443,10 +444,15 @@ int S1ParseData(char *data_str, int *numbers)
 					memset(curr_number, 0, MAX_LINE_LEN);
 					i = 0;
 				}
+				else if((' ' == c || '\t' == c) && COMMA == prev)
+				{
+					/*Continue Prsing the next char*/
+				}
 				else
 				{
 					return PARSE_DATA_ERR;
 				}
+				prev = PARSING_NUMBER;
 				break;
 			case COMMA:
 				if(isdigit(c))
@@ -467,6 +473,7 @@ int S1ParseData(char *data_str, int *numbers)
 				{
 					return PARSE_DATA_ERR;
 				}
+				prev = COMMA;
 				break;
 			case SIGN:
 				if(!isdigit(c))
@@ -475,6 +482,7 @@ int S1ParseData(char *data_str, int *numbers)
 				}
 				curr_number[i++] = c;
 				state = PARSING_NUMBER;
+				prev = SIGN;
 				break;
 		}
 		++data_str;
