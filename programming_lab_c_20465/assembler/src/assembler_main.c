@@ -9,30 +9,31 @@ static int PrintMacroAction(void *data ,void *param);
 int main(int argc, char **argv)
 {
 
-	int state = 0;
+	int err_code = 0;
 	int i = 1;
 	assembler_data_t assembler_data;
 
 	for(; i < argc; ++i)
 	{
+		printf("Starting to parse %s...\n", argv[i]);
 		InitAsmData(&assembler_data);
 
-		state = PreAsmDo(argv[i], &assembler_data);
-		if(state)
+		err_code = PreAsmDo(argv[i], &assembler_data);
+		if(err_code)
 		{
-			printf("Error in pre assembler state\n");
+			printf("Error in pre assembler err_code\n");
 			return 1;
 		}
 		
 
-		state = S1Do(&assembler_data);
-		if(state)
+		err_code = S1Do(&assembler_data);
+		if(err_code)
 		{
 			printf("Error in stage one\n");
 			return 2;
 		}
-		state = S2Do(&assembler_data);
-		if(state)
+		err_code = S2Do(&assembler_data);
+		if(err_code)
 		{
 			printf("Error in stage two\n");
 			return 3;
